@@ -135,4 +135,6 @@ class nrpe::params {
   $command_prefix                  = undef
   $debug                           = 0
   $connection_timeout              = 300
+  $nrpe_sysconfig                  = '/etc/sysconfig/nrpe'
+  $nrpe_ssl_opt                    = ''
 }

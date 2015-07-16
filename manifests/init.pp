@@ -39,6 +39,8 @@ class nrpe (
   $nrpe_user       = $nrpe::params::nrpe_user,
   $nrpe_group      = $nrpe::params::nrpe_group,
   $nrpe_pid_file   = $nrpe::params::nrpe_pid_file,
+  $nrpe_sysconfig  = $nrpe::params::nrpe_sysconfig,
+  $nrpe_ssl_opt    = $nrpe::params::nrpe_ssl_opt,
 ) inherits nrpe::params {
 
   package { $package_name:
@@ -51,13 +53,20 @@ class nrpe (
     name      => $service_name,
     enable    => true,
     require   => Package[$package_name],
-    subscribe => File['nrpe_config'],
+    subscribe => File['nrpe_config', ''],
   }
 
   file { 'nrpe_config':
     name    => $config,
     content => template('nrpe/nrpe.cfg.erb'),
     require => File['nrpe_include_dir'],
+  }
+
+  file { 'nrpe_sysconfig':
+    name    => '/etc/sysconfig/nrpe',
+    content => "# Managed by Puppet\nNRPE_SSL_OPT=\"$nrpe_ssl_opt\"\n",
+    before  => Service['nrpe'],
+    notify  => Service['nrpe'],
   }
 
   file { 'nrpe_include_dir':
